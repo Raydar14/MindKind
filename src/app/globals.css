@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    background-color: #08090c;
+    color: #efe7d8;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: rgba(201, 138, 138, 0.35);
+    color: #fff;
+  }
+}
+
+@layer components {
+  .surface {
+    @apply bg-ink-800/70 backdrop-blur-md border border-white/5 rounded-2xl;
+  }
+
+  .surface-quiet {
+    @apply bg-ink-900/60 border border-white/5 rounded-2xl;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5
+      text-sm font-medium tracking-wide transition
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-moss-400/60;
+  }
+
+  .btn-primary {
+    @apply btn bg-moss-500/90 text-ink-950 hover:bg-moss-400;
+  }
+
+  .btn-quiet {
+    @apply btn bg-white/5 text-sand-200 hover:bg-white/10;
+  }
+
+  .chip {
+    @apply inline-flex items-center rounded-full border border-white/10
+      bg-white/5 px-3 py-1 text-xs uppercase tracking-widest text-sand-300/80;
+  }
+}
+
+.aurora {
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  filter: blur(70px) saturate(120%);
+  background-image: var(--tw-bg-nebula, none);
+  pointer-events: none;
+}
