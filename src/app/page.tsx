@@ -1,7 +1,20 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { CORE_MANTRA } from "@/lib/compassion";
+import { suggestion, weeklyStats, type WeeklyStats } from "@/lib/stats";
+import type { Touchstone } from "@/lib/storage";
 
 export default function HomePage() {
+  const [stats, setStats] = useState<WeeklyStats | null>(null);
+  const [next, setNext] = useState<ReturnType<typeof suggestion> | null>(null);
+
+  useEffect(() => {
+    setStats(weeklyStats());
+    setNext(suggestion());
+  }, []);
+
   return (
     <div className="space-y-14">
       <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-ink-800/50 p-8 sm:p-12">
@@ -16,8 +29,8 @@ export default function HomePage() {
           into steady, kind self-talk.
         </h1>
         <p className="mt-6 max-w-xl text-base leading-relaxed text-sand-300/80">
-          MindKind helps you translate the sharp voice into the steady one — the
-          voice that stays with you when it's hard. Built on ACT, NVC,
+          MindKind translates the sharp voice into the steady one — the voice
+          that stays with you when it's hard. Grounded in ACT, NVC,
           self-compassion, and interoception.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
@@ -30,18 +43,67 @@ export default function HomePage() {
         </div>
       </section>
 
+      {next && (
+        <section className="surface flex flex-col justify-between gap-4 p-6 sm:flex-row sm:items-center sm:p-8">
+          <div>
+            <p className="chip">Next kind step</p>
+            <h2 className="mt-3 font-serif text-2xl text-sand-200">
+              {next.label}
+            </h2>
+            <p className="mt-1 text-sand-300/80">{next.reason}</p>
+          </div>
+          <Link href={next.href} className="btn-primary self-start sm:self-auto">
+            Begin →
+          </Link>
+        </section>
+      )}
+
+      {stats && stats.totalEntries > 0 && (
+        <section className="grid gap-4 sm:grid-cols-3">
+          <StatCard
+            eyebrow="C-Rating (7d)"
+            value={`${Math.round(stats.cRating * 100)}%`}
+            body={`${stats.activeDays} of 7 days practiced. No streak to break.`}
+          />
+          <StatCard
+            eyebrow="This week"
+            value={String(stats.totalEntries)}
+            body={`${stats.byKind.reframe} reframes · ${stats.byKind.dose} doses · ${stats.byKind.moment} moments`}
+          />
+          <StatCard
+            eyebrow="Returning"
+            value={String(stats.streakForward)}
+            body="Days you've returned to yourself, in a row. Not a streak — a witness."
+          />
+        </section>
+      )}
+
+      {stats?.latest && <LatestTouchstone latest={stats.latest} />}
+
       <section className="grid gap-4 sm:grid-cols-2">
         <Tile
           href="/reframe"
           eyebrow="Compassion Mirror"
           title="Reframe a thought"
-          body="Say the hard thing. Get it back in your own kinder voice — observation, feeling, need, and a phrase to carry."
+          body="Six lenses — CBT, ACT, NVC, self-compassion, Stoic, non-attachment — pick the voice that meets you today."
         />
         <Tile
           href="/dial"
           eyebrow="Nervous System Dial"
           title="Pick your state"
           body="Wired, foggy, numb, exhausted — the dial picks the right Micro-Dose for the next 60–180 seconds."
+        />
+        <Tile
+          href="/focus"
+          eyebrow="ON the Clock"
+          title="Focus with a witness"
+          body="A friendly co-working creature. Not alone at the desk. Log your focused blocks without shame."
+        />
+        <Tile
+          href="/rituals"
+          eyebrow="Ritual Builder"
+          title="Design a sequence"
+          body="Compose breath, body, sense, affirmation, journal, and silence into openings and repairs of your own."
         />
         <Tile
           href="/log"
@@ -67,6 +129,52 @@ export default function HomePage() {
       </section>
     </div>
   );
+}
+
+function StatCard({
+  eyebrow,
+  value,
+  body,
+}: {
+  eyebrow: string;
+  value: string;
+  body: string;
+}) {
+  return (
+    <div className="surface-quiet p-6">
+      <p className="text-xs uppercase tracking-widest text-sand-300/60">
+        {eyebrow}
+      </p>
+      <p className="mt-3 font-serif text-4xl text-sand-200">{value}</p>
+      <p className="mt-2 text-sm text-sand-300/70">{body}</p>
+    </div>
+  );
+}
+
+function LatestTouchstone({ latest }: { latest: Touchstone }) {
+  return (
+    <section className="surface-quiet p-6 sm:p-8">
+      <p className="chip">Latest touchstone</p>
+      <p className="mt-3 text-xs uppercase tracking-widest text-sand-300/60">
+        {kindLabel(latest.kind)} · {new Date(latest.createdAt).toLocaleString()}
+      </p>
+      <p className="mt-2 font-serif text-xl leading-relaxed text-sand-200">
+        {latest.title}
+      </p>
+      {latest.body && (
+        <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-sand-300/80">
+          {latest.body.split("\n\n")[0]}
+        </p>
+      )}
+      <Link href="/log" className="mt-4 inline-block text-sm text-moss-300">
+        See the full log →
+      </Link>
+    </section>
+  );
+}
+
+function kindLabel(k: Touchstone["kind"]) {
+  return k === "reframe" ? "Reframe" : k === "dose" ? "Dose" : "Moment";
 }
 
 function Tile({

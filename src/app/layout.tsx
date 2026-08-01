@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import "./globals.css";
 
@@ -6,6 +6,26 @@ export const metadata: Metadata = {
   title: "MindKind — a kinder inner language",
   description:
     "Translate hard thoughts and words into steady, kind self-talk. Grounded in ACT, NVC, self-compassion, and interoception.",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/icon.svg" }],
+  },
+  applicationName: "MindKind",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "MindKind",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#08090c",
+  colorScheme: "dark",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -30,11 +50,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/dial" className="hover:text-sand-200">
                 Dial
               </Link>
+              <Link href="/focus" className="hover:text-sand-200">
+                Focus
+              </Link>
+              <Link href="/rituals" className="hover:text-sand-200">
+                Rituals
+              </Link>
               <Link href="/log" className="hover:text-sand-200">
                 Log
               </Link>
               <Link href="/pillars" className="hover:text-sand-200">
                 Pillars
+              </Link>
+              <Link href="/about" className="hover:text-sand-200">
+                About
               </Link>
             </nav>
           </header>
@@ -49,10 +78,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </footer>
         </div>
 
-        <nav className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[min(28rem,calc(100%-2rem))] items-center justify-between rounded-full border border-white/10 bg-ink-900/85 px-3 py-2 shadow-xl backdrop-blur-lg sm:hidden">
+        <nav className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[min(30rem,calc(100%-2rem))] items-center justify-between rounded-full border border-white/10 bg-ink-900/85 px-2 py-2 shadow-xl backdrop-blur-lg sm:hidden">
           <TabLink href="/" label="Home" />
           <TabLink href="/reframe" label="Reframe" />
           <TabLink href="/dial" label="Dial" />
+          <TabLink href="/focus" label="Focus" />
           <TabLink href="/log" label="Log" />
         </nav>
       </body>

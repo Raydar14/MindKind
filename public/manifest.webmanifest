@@ -1,0 +1,15 @@
+{
+  "name": "MindKind",
+  "short_name": "MindKind",
+  "description": "Turn hard thoughts and words into steady, kind self-talk.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08090c",
+  "theme_color": "#08090c",
+  "orientation": "portrait",
+  "categories": ["health", "wellness", "lifestyle"],
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
