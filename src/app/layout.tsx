@@ -56,6 +56,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/rituals" className="hover:text-sand-200">
                 Rituals
               </Link>
+              <Link href="/skills" className="hover:text-sand-200">
+                Skills
+              </Link>
+              <Link href="/reparenting" className="hover:text-sand-200">
+                Parts
+              </Link>
               <Link href="/log" className="hover:text-sand-200">
                 Log
               </Link>

@@ -3,16 +3,19 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CORE_MANTRA } from "@/lib/compassion";
+import { loadProfile, valueLabel, type Profile } from "@/lib/profile";
 import { suggestion, weeklyStats, type WeeklyStats } from "@/lib/stats";
 import type { Touchstone } from "@/lib/storage";
 
 export default function HomePage() {
   const [stats, setStats] = useState<WeeklyStats | null>(null);
   const [next, setNext] = useState<ReturnType<typeof suggestion> | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     setStats(weeklyStats());
     setNext(suggestion());
+    setProfile(loadProfile());
   }, []);
 
   return (
@@ -42,6 +45,37 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      {profile ? (
+        <section className="surface-quiet p-6 sm:p-8">
+          <p className="chip">Your compass</p>
+          <p className="mt-3 font-serif text-xl leading-relaxed text-sand-200">
+            “{profile.identity}”
+          </p>
+          <p className="mt-2 text-sm text-sand-300/70">
+            Values: {profile.values.map(valueLabel).join(" · ")}
+          </p>
+          <Link
+            href="/onboarding"
+            className="mt-3 inline-block text-xs text-moss-300 hover:underline"
+          >
+            Adjust →
+          </Link>
+        </section>
+      ) : (
+        <section className="surface p-6 sm:p-8">
+          <p className="chip">Get your bearings</p>
+          <p className="mt-3 font-serif text-2xl text-sand-200">
+            Choose three values and one identity line — 60 seconds.
+          </p>
+          <p className="mt-2 text-sand-300/80">
+            The mirror uses your line when the sharp voice comes.
+          </p>
+          <Link href="/onboarding" className="btn-primary mt-4">
+            Set your compass →
+          </Link>
+        </section>
+      )}
 
       {next && (
         <section className="surface flex flex-col justify-between gap-4 p-6 sm:flex-row sm:items-center sm:p-8">
@@ -104,6 +138,18 @@ export default function HomePage() {
           eyebrow="Ritual Builder"
           title="Design a sequence"
           body="Compose breath, body, sense, affirmation, journal, and silence into openings and repairs of your own."
+        />
+        <Tile
+          href="/skills"
+          eyebrow="Swipe Deck"
+          title="One small sensory thing"
+          body="Sour candy · warm towels · watching fish · humming low. Older than reasoning, and often faster."
+        />
+        <Tile
+          href="/reparenting"
+          eyebrow="Reparenting Space"
+          title="Meet a tender part"
+          body="Scared, angry, weary, unseen, left-behind. Not fixing — contact. A slow guided sequence."
         />
         <Tile
           href="/log"

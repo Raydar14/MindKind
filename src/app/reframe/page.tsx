@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CATCHER_CUES,
   COMMON_PHRASES,
   COMPASSION_CATCHERS,
   COMPASSION_WORDS,
 } from "@/lib/compassion";
+import { loadProfile, type Profile } from "@/lib/profile";
 import {
   LENSES,
   reframe,
@@ -33,12 +34,19 @@ export default function ReframePage() {
   const [result, setResult] = useState<Reframing | null>(null);
   const [activeLens, setActiveLens] = useState<LensKey>("compassion");
   const [saved, setSaved] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    setProfile(loadProfile());
+  }, []);
 
   const canSubmit = thought.trim().length > 0;
 
   function onReframe() {
     setSaved(false);
-    setResult(reframe({ thought, feeling, need }));
+    const r = reframe({ thought, feeling, need });
+    if (profile?.identity) r.identityLine = profile.identity;
+    setResult(r);
   }
 
   function onSave() {
