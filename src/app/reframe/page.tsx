@@ -226,6 +226,14 @@ export default function ReframePage() {
               <button type="button" onClick={onSave} className="btn-primary">
                 {saved ? "Saved ✓" : "Save to Touchstone Log"}
               </button>
+              <Link
+                href={`/companion?seed=${encodeURIComponent(
+                  result.observation,
+                )}`}
+                className="btn-quiet"
+              >
+                Talk this through →
+              </Link>
               <Link href="/dial" className="btn-quiet">
                 Take a Micro-Dose →
               </Link>

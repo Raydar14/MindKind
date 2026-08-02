@@ -79,10 +79,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           <main className="flex-1">{children}</main>
 
-          <footer className="mt-16 border-t border-white/5 pt-6 text-center">
+          <footer className="mt-16 space-y-4 border-t border-white/5 pt-6 text-center">
             <p className="mx-auto max-w-xl font-serif text-sm italic leading-relaxed text-sand-300/70">
               You are not behind. You are building peace in real time. Quiet
               work is still real work. Gentle steps still carry you forward.
+            </p>
+            <p className="text-xs text-sand-300/60">
+              If you need a human right now:{" "}
+              <Link href="/crisis" className="text-moss-300 hover:underline">
+                crisis resources
+              </Link>{" "}
+              · <Link href="/about" className="hover:text-sand-200">about</Link>
             </p>
           </footer>
         </div>

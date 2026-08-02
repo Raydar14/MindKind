@@ -9,6 +9,10 @@ export const dynamic = "force-dynamic";
 
 type Body = {
   turns: ConvoTurn[];
+  context?: {
+    identity?: string;
+    values?: string[];
+  };
 };
 
 export async function POST(req: NextRequest) {
@@ -44,10 +48,11 @@ export async function POST(req: NextRequest) {
           : t.content,
       }));
 
+    const ctxSuffix = buildContextSuffix(body.context);
     const res = await client.messages.create({
       model: "claude-opus-4-7",
       max_tokens: 700,
-      system: SYSTEM_PROMPT,
+      system: ctxSuffix ? `${SYSTEM_PROMPT}\n\n${ctxSuffix}` : SYSTEM_PROMPT,
       messages,
     });
     const text = res.content
@@ -59,6 +64,23 @@ export async function POST(req: NextRequest) {
     console.error("companion error", err);
     return json({ reply: fallbackReply(turns), source: "fallback-error" });
   }
+}
+
+function buildContextSuffix(ctx: Body["context"]): string {
+  if (!ctx) return "";
+  const parts: string[] = [];
+  if (ctx.identity) {
+    parts.push(
+      `This user has set an identity line they want to move toward: "${ctx.identity}". Reference it briefly ONLY when it fits — not as a slogan.`,
+    );
+  }
+  if (ctx.values && ctx.values.length > 0) {
+    parts.push(
+      `Their stated values right now are: ${ctx.values.join(", ")}. Let their choices be informed by these when relevant; don't lecture them with the list.`,
+    );
+  }
+  if (parts.length === 0) return "";
+  return `## About this person\n${parts.join(" ")}`;
 }
 
 function json(data: unknown, status = 200) {

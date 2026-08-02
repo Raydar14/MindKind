@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { loadProfile, valueLabel, type Profile } from "@/lib/profile";
 import {
   clearConvo,
   detectUrgency,
@@ -15,15 +17,28 @@ import {
 type Stage = "safety" | "state" | "chat";
 
 export default function CompanionPage() {
+  return (
+    <Suspense fallback={null}>
+      <CompanionInner />
+    </Suspense>
+  );
+}
+
+function CompanionInner() {
+  const params = useSearchParams();
+  const seed = params?.get("seed") ?? null;
+  const seedState = (params?.get("state") ?? null) as FeelingState | null;
   const [stage, setStage] = useState<Stage>("safety");
   const [state, setState] = useState<FeelingState | null>(null);
   const [turns, setTurns] = useState<ConvoTurn[]>([]);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const [source, setSource] = useState<string | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    setProfile(loadProfile());
     const existing = loadConvo();
     if (existing.length > 0) {
       setTurns(existing);
@@ -32,7 +47,13 @@ export default function CompanionPage() {
         .reverse()
         .find((t) => t.role === "user" && t.state);
       if (lastUserState?.state) setState(lastUserState.state);
+    } else if (seed) {
+      // Seed a first user message from a cross-link.
+      if (seedState) setState(seedState);
+      setInput(seed);
+      setStage("state");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -75,7 +96,15 @@ export default function CompanionPage() {
       const res = await fetch("/api/companion", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ turns: nextTurns }),
+        body: JSON.stringify({
+          turns: nextTurns,
+          context: profile
+            ? {
+                identity: profile.identity,
+                values: profile.values.map(valueLabel),
+              }
+            : undefined,
+        }),
       });
       const data = (await res.json()) as { reply?: string; source?: string };
       setSource(data.source ?? null);
@@ -289,6 +318,12 @@ function SafetyGate({
           <span className="font-medium text-sand-200">988</span> (U.S. Suicide
           and Crisis Lifeline) or <span className="font-medium text-sand-200">911</span>. Outside the U.S., your local emergency number.
         </p>
+        <Link
+          href="/crisis"
+          className="mt-3 inline-block text-sm text-moss-300 hover:underline"
+        >
+          Full crisis resources →
+        </Link>
       </div>
     </div>
   );

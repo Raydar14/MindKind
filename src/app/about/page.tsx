@@ -100,12 +100,38 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <section className="surface p-6 sm:p-8">
+        <p className="chip">How the Companion is different</p>
+        <p className="mt-4 leading-relaxed text-sand-300/80">
+          MindKind's AI companion is a psychologically informed voice, not a
+          general chatbot. It's built around a single loop —{" "}
+          <span className="text-sand-200">Notice → Name → Release → Choose</span> — and it adapts what it offers to the state you're in.
+        </p>
+        <ul className="mt-4 space-y-2 text-sand-300/80">
+          <li>• Panic gets a longer <em>exhale</em>, not a big inhale.</li>
+          <li>• Numb gets sensory activation, not more thinking.</li>
+          <li>• Grief gets room, not an exercise to make it stop.</li>
+          <li>• Anger gets space and impulse control before analysis.</li>
+          <li>• Rumination gets defusion or attention shift, not more debate.</li>
+        </ul>
+        <p className="mt-4 leading-relaxed text-sand-300/80">
+          It asks fewer, better questions; separates feelings from thoughts from
+          urges from actions; validates without enabling; and drops all its
+          usual tools the moment safety is at stake — where it becomes short,
+          direct, and points to a human.
+        </p>
+      </section>
+
       <section className="surface-quiet p-6 sm:p-8">
         <p className="chip">On what this is, and isn't</p>
         <p className="mt-4 leading-relaxed text-sand-300/80">
           MindKind is a practice space, not a substitute for care. If you are in
           crisis, please reach out to a trusted person, a therapist, or a crisis
-          line. In the U.S., 988 is the Suicide and Crisis Lifeline.
+          line — start at{" "}
+          <a href="/crisis" className="text-moss-300 underline">
+            /crisis
+          </a>
+          .
         </p>
       </section>
     </div>
