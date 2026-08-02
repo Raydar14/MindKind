@@ -44,6 +44,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </span>
             </Link>
             <nav className="hidden gap-6 text-sm text-sand-300/80 sm:flex">
+              <Link href="/companion" className="hover:text-sand-200">
+                Companion
+              </Link>
               <Link href="/reframe" className="hover:text-sand-200">
                 Reframe
               </Link>
@@ -86,9 +89,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <nav className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[min(30rem,calc(100%-2rem))] items-center justify-between rounded-full border border-white/10 bg-ink-900/85 px-2 py-2 shadow-xl backdrop-blur-lg sm:hidden">
           <TabLink href="/" label="Home" />
+          <TabLink href="/companion" label="Talk" />
           <TabLink href="/reframe" label="Reframe" />
           <TabLink href="/dial" label="Dial" />
-          <TabLink href="/focus" label="Focus" />
           <TabLink href="/log" label="Log" />
         </nav>
       </body>

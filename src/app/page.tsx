@@ -116,6 +116,12 @@ export default function HomePage() {
 
       <section className="grid gap-4 sm:grid-cols-2">
         <Tile
+          href="/companion"
+          eyebrow="Companion"
+          title="Talk it through"
+          body="A psychologically informed voice — not a therapist. Notice, name, release, choose. Short, adaptive, and it knows when to hand you to a human."
+        />
+        <Tile
           href="/reframe"
           eyebrow="Compassion Mirror"
           title="Reframe a thought"
