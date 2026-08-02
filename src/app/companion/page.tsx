@@ -93,6 +93,14 @@ function CompanionInner() {
       return;
     }
 
+    // Seed an empty assistant turn we'll append to as chunks arrive.
+    const placeholder: ConvoTurn = {
+      role: "assistant",
+      content: "",
+      at: Date.now(),
+    };
+    setTurns([...nextTurns, placeholder]);
+
     try {
       const res = await fetch("/api/companion", {
         method: "POST",
@@ -107,22 +115,46 @@ function CompanionInner() {
             : undefined,
         }),
       });
-      const data = (await res.json()) as { reply?: string; source?: string };
-      setSource(data.source ?? null);
-      const reply: ConvoTurn = {
-        role: "assistant",
-        content: data.reply ?? "Still here with you.",
-        at: Date.now(),
-      };
-      setTurns([...nextTurns, reply]);
+      setSource(res.headers.get("x-companion-source"));
+
+      if (!res.body) {
+        const text = await res.text();
+        setTurns([
+          ...nextTurns,
+          { ...placeholder, content: text || "Still here with you." },
+        ]);
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = "";
+      // Stream loop.
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        accumulated += decoder.decode(value, { stream: true });
+        setTurns([
+          ...nextTurns,
+          { ...placeholder, content: accumulated },
+        ]);
+      }
+      accumulated += decoder.decode();
+      if (accumulated) {
+        setTurns([
+          ...nextTurns,
+          { ...placeholder, content: accumulated },
+        ]);
+      }
     } catch {
-      const reply: ConvoTurn = {
-        role: "assistant",
-        content:
-          "I lost the connection for a second. Try again, or step away for a moment — that's a valid choice too.",
-        at: Date.now(),
-      };
-      setTurns([...nextTurns, reply]);
+      setTurns([
+        ...nextTurns,
+        {
+          ...placeholder,
+          content:
+            "I lost the connection for a second. Try again, or step away for a moment — that's a valid choice too.",
+        },
+      ]);
     } finally {
       setPending(false);
     }
@@ -221,23 +253,27 @@ function CompanionInner() {
       >
         {turns.length === 0 && <OpeningInvitation state={state} />}
         <ul className="space-y-4">
-          {turns.map((t, i) => (
-            <li
-              key={i}
-              className={t.role === "user" ? "flex justify-end" : "flex justify-start"}
-            >
-              <div
-                className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 leading-relaxed ${
-                  t.role === "user"
-                    ? "bg-moss-500/15 text-sand-200"
-                    : "bg-ink-900/70 text-sand-200"
-                }`}
+          {turns
+            .filter((t) => t.content.length > 0)
+            .map((t, i) => (
+              <li
+                key={i}
+                className={
+                  t.role === "user" ? "flex justify-end" : "flex justify-start"
+                }
               >
-                {renderMarkdownLite(t.content)}
-              </div>
-            </li>
-          ))}
-          {pending && (
+                <div
+                  className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 leading-relaxed ${
+                    t.role === "user"
+                      ? "bg-moss-500/15 text-sand-200"
+                      : "bg-ink-900/70 text-sand-200"
+                  }`}
+                >
+                  {renderMarkdownLite(t.content)}
+                </div>
+              </li>
+            ))}
+          {pending && turns.at(-1)?.role === "assistant" && !turns.at(-1)?.content && (
             <li className="flex justify-start">
               <div className="rounded-2xl bg-ink-900/70 px-4 py-3 text-sand-300/70">
                 <span className="inline-flex gap-1">
