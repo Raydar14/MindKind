@@ -59,7 +59,16 @@ export function suggestion(): {
   label: string;
   reason: string;
 } {
-  const h = new Date().getHours();
+  const now = new Date();
+  const h = now.getHours();
+  const day = now.getDay();
+  // Sunday evening → review
+  if (day === 0 && h >= 17)
+    return {
+      href: "/review",
+      label: "Weekly review",
+      reason: "Sunday. A quiet look at the week — a signal, not a grade.",
+    };
   if (h < 10)
     return {
       href: "/rituals/morning-anchor",
@@ -68,9 +77,9 @@ export function suggestion(): {
     };
   if (h < 14)
     return {
-      href: "/dial",
-      label: "Nervous System Dial",
-      reason: "Midday check — what does the body need?",
+      href: "/breath",
+      label: "Breathing Dojo",
+      reason: "Midday. Breathe, and notice the texture.",
     };
   if (h < 18)
     return {
@@ -80,9 +89,9 @@ export function suggestion(): {
     };
   if (h < 21)
     return {
-      href: "/reframe",
-      label: "Reframe a thought",
-      reason: "End the day with a kinder inner sentence.",
+      href: "/companion",
+      label: "Talk with the Companion",
+      reason: "End of day — one thing to notice, name, and set down.",
     };
   return {
     href: "/micro/kind-mirror",

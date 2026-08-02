@@ -164,6 +164,18 @@ export default function HomePage() {
           body="Small moments you want to remember. Reframes, resets, and the times you stayed with yourself."
         />
         <Tile
+          href="/breath"
+          eyebrow="Breathing Dojo"
+          title="Mindful of breath"
+          body="Anapanasati. Four patterns, texture-first logging. Not a fix — a way to feel."
+        />
+        <Tile
+          href="/review"
+          eyebrow="Weekly Review"
+          title="Identity alignment"
+          body="Three quick questions. Three closing lines. A signal, not a grade — kept private on your device."
+        />
+        <Tile
           href="/pillars"
           eyebrow="Six Pillars"
           title="The compass"

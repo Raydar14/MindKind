@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { loadProfile, valueLabel, type Profile } from "@/lib/profile";
+import { saveTouchstone } from "@/lib/storage";
 import {
   clearConvo,
   detectUrgency,
@@ -135,6 +136,21 @@ function CompanionInner() {
     setSource(null);
   }
 
+  function saveTakeaway() {
+    const lastAssistant = [...turns].reverse().find((t) => t.role === "assistant");
+    const lastUser = [...turns].reverse().find((t) => t.role === "user");
+    if (!lastAssistant && !lastUser) return;
+    saveTouchstone({
+      kind: "moment",
+      title: `Companion — ${lastUser ? trim(lastUser.content, 100) : "session"}`,
+      body: lastAssistant ? lastAssistant.content : undefined,
+      meta: {
+        kind: "companion",
+        state: state ?? "unclear",
+      },
+    });
+  }
+
   if (stage === "safety") {
     return (
       <SafetyGate
@@ -181,6 +197,14 @@ function CompanionInner() {
               state · {STATE_LABELS.find((s) => s.key === state)?.label ?? state}
             </span>
           )}
+          <button
+            type="button"
+            onClick={saveTakeaway}
+            disabled={turns.length === 0}
+            className="text-xs text-sand-300/70 hover:text-sand-200 disabled:opacity-40"
+          >
+            Save takeaway
+          </button>
           <button
             type="button"
             onClick={resetConvo}
@@ -408,6 +432,11 @@ function Dot({ delay = 0 }: { delay?: number }) {
       style={{ animationDelay: `${delay}s` }}
     />
   );
+}
+
+function trim(s: string, n: number): string {
+  s = s.trim().replace(/\s+/g, " ");
+  return s.length > n ? s.slice(0, n - 1) + "…" : s;
 }
 
 /** Minimal markdown — bold only, and paragraph breaks. Keeps LLM output readable without HTML injection. */
